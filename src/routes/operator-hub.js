@@ -14,7 +14,10 @@ import ethUtils from '../utils/eth-utils';
 class OperatorHub extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { account: props.account }
+    this.state = {
+      account: props.account,
+      devMode: false,
+    }
 
     this.web3 = ethUtils.web3;
     this.chainId = ethUtils.chainId;
@@ -77,21 +80,30 @@ class OperatorHub extends React.Component {
     return <ContractMethodSend {...props} />;
   }
 
-  renderCall_AddressList() {
+  renderCall_GetAddresses() {
     let props = {
       web3: this.web3,
       account: this.accounts[0],
       contract: this.contracts.operatorHub,
       title: 'Operator列表',
       desc: '用於後端透過Proxy執行Mint或Transfer',
-      sourceMethod: this.contracts.operatorHub.methods.getCount(),
-      method: 'getAt',
+      method: 'getAddresses',
       args: [],
-      renderText: (address) => {
-        return renderAddressVerified(this.addressVerified, address, this.etherscanLink_address);
+      renderText: (addresses) => {
+        const results = [];
+        for (let i = 0; i < addresses.length; i++) {
+          const address = addresses[i];
+          results.push(
+            <div key={i}>
+              {`[${i}]: `}
+              {renderAddressVerified(this.addressVerified, address, this.etherscanLink_address)}
+            </div>
+          )
+        }
+        return results;
       }
     };
-    return <ContractMethodDynamicArrayCallView {...props} />;
+    return <ContractMethodCallView {...props} />;
   }
 
   renderSend_Set() {
@@ -132,15 +144,104 @@ class OperatorHub extends React.Component {
     return <ContractMethodSend {...props} />;
   }
 
+  renderDevModeView() {
+    const content = () => {
+      if (!this.state.devMode) { return; }
+      return <div>
+        {this.renderCall_Contains()}
+        {this.renderCall_GetCount()}
+        {this.renderCall_GetAt()}
+      </div>;
+    }
+    return (
+      <div style={{ borderTop: '1px solid #ccc' }}>
+        <div><label>
+          Dev Mode
+          <input
+            type="checkbox"
+            checked={this.state.devMode}
+            onChange={() => {
+              this.setState({ devMode: !this.state.devMode });
+            }}
+          />
+        </label></div>
+        {content()}
+      </div>
+    );
+  }
+
+  renderCall_Contains() {
+    let props = {
+      web3: this.web3,
+      account: this.accounts[0],
+      contract: this.contracts.operatorHub,
+      title: 'contains',
+      desc: '檢查該Operator是否存在',
+      method: 'contains',
+      args: [
+        {
+          type: 'string',
+          title: 'Operator地址',
+          value: '',
+        },
+      ],
+      renderText: (isExists) => {
+        return isExists ? '存在' : '不存在';
+      }
+    };
+    return <ContractMethodCall {...props} />;
+  }
+
+  renderCall_GetCount() {
+    let props = {
+      web3: this.web3,
+      account: this.accounts[0],
+      contract: this.contracts.operatorHub,
+      title: 'getCount',
+      desc: 'Operator數量',
+      method: 'getCount',
+      args: [],
+      renderText: (data) => {
+        return (
+          <div>數量：{data}</div>
+        );
+      }
+    };
+    return <ContractMethodCallView {...props} />;
+  }
+
+  renderCall_GetAt() {
+    let props = {
+      web3: this.web3,
+      account: this.accounts[0],
+      contract: this.contracts.operatorHub,
+      title: 'getAt',
+      desc: '利用index查詢Operator',
+      method: 'getAt',
+      args: [
+        {
+          type: 'number',
+          title: 'index',
+          value: '',
+        },
+      ],
+      renderText: (address) => {
+        return <div>地址：{address}</div>;
+      }
+    };
+    return <ContractMethodCall {...props} />;
+  }
+
   render() {
     return (
       <div>
         {this.renderTop()}
         {this.renderCall_Owner()}
-        {this.renderCall_AddressList()}
+        {this.renderCall_GetAddresses()}
         {this.renderSend_Set()}
         {this.renderSend_DeleteAt()}
         {this.renderSend_TransferOwnership()}
+        {this.renderDevModeView()}
       </div>
     );
   }

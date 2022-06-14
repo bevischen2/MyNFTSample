@@ -70,16 +70,22 @@ class ContractMethodSend extends React.Component {
         .send({ from: account, gas: Math.floor(eGas * 1.5) })
         .on('transactionHash', (tx) => {
           this.setState({
-            status: [
-              'Executing...', <br key='br' />, 'Tx: ', renderTx(tx, this.etherscanLink)
-            ]
+            status: (
+              <div>
+                <div>Executing...</div>
+                <div>Tx: {renderTx(tx, this.etherscanLink)}</div>
+              </div>
+            )
           });
         })
         .on('receipt', (receipt) => {
           this.setState({
-            status: [
-              'Completed.', <br key='br' />, 'Tx: ', renderTx(receipt.transactionHash, this.etherscanLink)
-            ]
+            status: (
+              <div>
+                <div>Completed.</div>
+                <div>Tx: {renderTx(receipt.transactionHash, this.etherscanLink)}</div>
+              </div>
+            )
           });
         })
         .on('error', errorHandler);
@@ -97,7 +103,7 @@ class ContractMethodSend extends React.Component {
             {this.renderInputs()}
             <input style={{ margin: '4px 0' }} type="submit" value="submit" />
           </form>
-          <div style={{ marginBottom: '8px' }}>{this.state.status}</div>
+          <div>{this.state.status}</div>
         </div>
       </div>
     );
@@ -169,16 +175,18 @@ class ContractMethodCall extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      web3: props.web3,
-      accounts: props.accounts,
-      contract: props.contract,
-      method: props.method,
       args: props.args,
-      desc: props.desc,
-      title: props.title,
       text: '',
-      renderText: props.renderText,
     };
+
+    this.web3 = props.web3;
+    this.account = props.account;
+    this.contract = props.contract;
+    this.method = props.method;
+    this.desc = props.desc;
+    this.title = props.title;
+    this.renderText = props.renderText;
+
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
@@ -191,12 +199,11 @@ class ContractMethodCall extends React.Component {
 
   async handleSubmit(event) {
     event.preventDefault();
-    const contract = this.state.contract;
-    const method = this.state.method;
-    const account = this.state.accounts[0];
-    let args = [...event.target]
-      .slice(0, event.target.length - 1)
-      .map((e) => (e.value));
+
+    const contract = this.contract;
+    const method = this.method;
+    const account = this.account;
+    const args = [...event.target].slice(0, event.target.length - 1).map((e) => (e.value));
 
     this.setState({ text: 'Waiting...' });
     contract.methods[method](...args)
@@ -206,11 +213,11 @@ class ContractMethodCall extends React.Component {
           return;
         }
 
-        if (this.state.renderText) {
-          const renderText = this.state.renderText(result);
+        if (this.renderText) {
+          const renderText = this.renderText(result);
           this.setState({ text: renderText });
         } else {
-          this.setState({ text: `${this.state.method}： ${result}` });
+          this.setState({ text: `${this.method}： ${result}` });
         }
       });
   }
@@ -221,9 +228,8 @@ class ContractMethodCall extends React.Component {
       inputs.push(
         <div key={i}>
           <label>
-            {this.state.args[i].title}
-            <br />
-            <input
+            <b>{this.state.args[i].title} : </b>
+            <input style={{ width: '330px' }}
               name={i}
               type={this.state.args[i].type}
               value={this.state.args[i].value}
@@ -238,11 +244,12 @@ class ContractMethodCall extends React.Component {
   render() {
     return (
       <div>
-        <h3>{this.state.title}</h3>
-        <div className='new-line'>{this.state.desc}</div>
+        <h3 style={{ marginBottom: '8px' }}>
+          <span>{this.title} ({this.desc})</span>
+        </h3>
         <form onSubmit={this.handleSubmit}>
           {this.renderInputs()}
-          <input type="submit" value="查詢" />
+          <input style={{ margin: '4px 0' }} type="submit" value="submit" />
         </form>
         <div>{this.state.text}</div>
       </div>
@@ -358,7 +365,7 @@ class ContractMethodDynamicArrayCall extends React.Component {
         <div className='new-line'>{this.state.desc}</div>
         <form onSubmit={this.handleSubmit}>
           {this.renderInputs()}
-          <input type="submit" value="查詢" />
+          <input type="submit" value="submit" />
         </form>
         <div>{this.state.text}</div>
       </div>
