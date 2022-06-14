@@ -8,16 +8,17 @@ import {
 } from 'react-router-dom';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-// import Expenses from "./routes/expenses";
-// import Invoices from "./routes/invoices";
+import { SignerHub } from "./routes/signer-hub";
+import { OperatorHub } from "./routes/operator-hub";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <BrowserRouter>
     <Routes>
       <Route path='/' element={<App />}>
-        {/* <Route path='expenses' element={<Expenses />} />
-        <Route path='invoices' element={<Invoices />} /> */}
+        <Route index element={<SignerHub />} />
+        <Route path='signer-hub' element={<SignerHub />} />
+        <Route path='operator-hub' element={<OperatorHub />} />
       </Route>
     </Routes>
   </BrowserRouter>

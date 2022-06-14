@@ -4,6 +4,9 @@ import Web3 from 'web3';
 const ethUtils = {
   provider: null,
   web3: null,
+  chainId: null,
+  contractDeployed: null,
+  addressVerified: null,
   loadProvider: async (handleChainChanged, handleAccountsChanged) => {
     // this returns the provider, or null if it wasn't detected
     const provider = await detectEthereumProvider();
@@ -84,16 +87,30 @@ const ethUtils = {
       });
   },
   etherscanLink: {
-    31337: null,
-    1: 'https://etherscan.io/address/',
-    3: 'https://ropsten.etherscan.io/address/',
-    4: 'https://rinkeby.etherscan.io/address/',
-    5: 'https://goerli.etherscan.io/address/',
-    42: 'https://kovan.etherscan.io/address/',
-    56: 'https://bscscan.com/address/',
-    97: 'https://testnet.bscscan.com/address/',
-    137: 'https://polygonscan.com/address/',
-    80001: 'https://mumbai.polygonscan.com/address/',
+    address: {
+      31337: null,
+      1: 'https://etherscan.io/address/',
+      3: 'https://ropsten.etherscan.io/address/',
+      4: 'https://rinkeby.etherscan.io/address/',
+      5: 'https://goerli.etherscan.io/address/',
+      42: 'https://kovan.etherscan.io/address/',
+      56: 'https://bscscan.com/address/',
+      97: 'https://testnet.bscscan.com/address/',
+      137: 'https://polygonscan.com/address/',
+      80001: 'https://mumbai.polygonscan.com/address/',
+    },
+    tx: {
+      31337: null,
+      1: 'https://etherscan.io/tx/',
+      3: 'https://ropsten.etherscan.io/tx/',
+      4: 'https://rinkeby.etherscan.io/tx/',
+      5: 'https://goerli.etherscan.io/tx/',
+      42: 'https://kovan.etherscan.io/tx/',
+      56: 'https://bscscan.com/tx/',
+      97: 'https://testnet.bscscan.com/tx/',
+      137: 'https://polygonscan.com/tx/',
+      80001: 'https://mumbai.polygonscan.com/tx/',
+    }
   },
   loadAddressVerified: async () => {
     const res = await fetch('./verified-address.json', {

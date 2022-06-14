@@ -1,17 +1,21 @@
 import React from 'react';
+import { renderTx } from './etherscan-view';
 
 class ContractMethodSend extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      web3: props.web3,
-      accounts: props.accounts,
-      contract: props.contract,
-      method: props.method,
       args: props.args,
-      desc: props.desc,
-      status: 'None',
+      status: null,
     };
+
+    this.web3 = props.web3;
+    this.account = props.account;
+    this.contract = props.contract;
+    this.method = props.method;
+    this.desc = props.desc;
+    this.etherscanLink = props.etherscanLink;
+
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
@@ -22,9 +26,8 @@ class ContractMethodSend extends React.Component {
       inputs.push(
         <div key={i}>
           <label>
-            {this.state.args[i].title}
-            <br />
-            <input
+            <b>{this.state.args[i].title} : </b>
+            <input style={{ width: '330px' }}
               name={i}
               type={this.state.args[i].type}
               value={this.state.args[i].value}
@@ -37,82 +40,126 @@ class ContractMethodSend extends React.Component {
   }
 
   handleChange(event) {
-    // console.log(event);
-    let args = Object.assign([], this.state.args);
+    const args = Object.assign([], this.state.args);
     args[event.target.name].value = event.target.value;
     this.setState({ args: args });
   }
 
   async handleSubmit(event) {
     event.preventDefault();
-    const contract = this.state.contract;
-    const method = this.state.method;
-    const account = this.state.accounts[0];
-    let args = [...event.target]
-      .slice(0, event.target.length - 1)
-      .map((e) => (e.value));
-    let eGas = await contract.methods[method](...args).estimateGas({ from: account });
 
-    this.setState({ status: 'Executing...' });
-    contract.methods[method](...args)
-      .send({ from: account, gas: Math.floor(eGas * 1.5) })
-      .on('transactionHash', (hash) => {
-        this.setState({
-          status: [
-            'Executing...',
-            <br key='br' />,
-            'Tx: ' + hash,
-          ]
-        });
-      })
-      .on('receipt', (receipt) => {
-        this.setState({
-          status: [
-            'Completed.',
-            <br key='br' />,
-            'Tx: ' + receipt.transactionHash,
-          ]
-        });
-      })
-      .on('error', (error) => {
-        if (typeof (this.state.status) === 'string') {
+    const errorHandler = error => {
+      if (typeof (this.state.status) === 'string' || this.state.status === null) {
+        this.setState({ status: ['Error.', <br key='br' />, error.message] });
+      } else {
+        const status = this.state.status.slice();
+        status[0] = 'Error.';
+        this.setState({ status: [...status, <br key='br' />, error.message] });
+      }
+    };
+
+    try {
+      const contract = this.contract;
+      const method = this.method;
+      const account = this.account;
+      const args = [...event.target].slice(0, event.target.length - 1).map((e) => (e.value));
+      const eGas = await contract.methods[method](...args).estimateGas({ from: account });
+
+      this.setState({ status: 'Executing...' });
+      contract.methods[method](...args)
+        .send({ from: account, gas: Math.floor(eGas * 1.5) })
+        .on('transactionHash', (tx) => {
           this.setState({
             status: [
-              'Error.',
-              <br key='br' />,
-              error.message,
+              'Executing...', <br key='br' />, 'Tx: ', renderTx(tx, this.etherscanLink)
             ]
           });
-        } else {
-          let status = this.state.status.slice();
-          status[0] = 'Error.';
+        })
+        .on('receipt', (receipt) => {
           this.setState({
             status: [
-              ...status,
-              <br key='br' />,
-              error.message,
+              'Completed.', <br key='br' />, 'Tx: ', renderTx(receipt.transactionHash, this.etherscanLink)
             ]
           });
-        }
-      })
+        })
+        .on('error', errorHandler);
+    } catch (error) {
+      errorHandler(error);
+    }
   }
 
   render() {
-    if (this.state.web3 === null) {
-      return (
-        <div>
-          <h3>Loading Web3, accounts, and contract...</h3>
-        </div>
-      );
-    }
     return (
       <div>
-        <h3>{this.state.desc}</h3>
-        <p>Status: {this.state.status}</p>
-        <form onSubmit={this.handleSubmit}>
-          {this.renderInputs()}
-          <input type="submit" value="submit" />
-        </form>
+        <h3 style={{ marginBottom: '8px' }}>{this.desc}</h3>
+        <div>
+          <form onSubmit={this.handleSubmit}>
+            {this.renderInputs()}
+            <input style={{ margin: '4px 0' }} type="submit" value="submit" />
+          </form>
+          <div style={{ marginBottom: '8px' }}>{this.state.status}</div>
+        </div>
+      </div>
+    );
+  }
+}
+
+class ContractMethodCallView extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      text: '',
+    };
+
+    this.web3 = props.web3;
+    this.account = props.account;
+    this.contract = props.contract;
+    this.method = props.method;
+    this.args = props.args;
+    this.title = props.title;
+    this.desc = props.desc;
+    this.renderText = props.renderText;
+
+    this.callContractMethod = this.callContractMethod.bind(this);
+  }
+
+  componentDidMount() {
+    this.callContractMethod();
+  }
+
+  callContractMethod() {
+    const contract = this.contract;
+    const method = this.method;
+    const account = this.account;
+    const args = this.args;
+
+    this.setState({ text: 'Waiting...' });
+    contract.methods[method](...args)
+      .call({ from: account }, (error, result) => {
+        if (error) {
+          this.setState({ text: `${error.message}` });
+          return;
+        }
+
+        if (this.renderText) {
+          const renderText = this.renderText(result);
+          this.setState({ text: renderText });
+        } else {
+          this.setState({ text: `${this.method}： ${result}` });
+        }
+      });
+  }
+
+  render() {
+    return (
+      <div>
+        <h3 style={{ marginBottom: '8px' }}>
+          <span>{this.title} ({this.desc}) | </span>
+          <button onClick={() => this.callContractMethod()}>Refresh</button>
+        </h3>
+        <div>
+          <div>{this.state.text}</div>
+        </div>
       </div>
     );
   }
@@ -136,28 +183,7 @@ class ContractMethodCall extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  renderInputs() {
-    const inputs = [];
-    for (let i = 0; i < this.state.args.length; i++) {
-      inputs.push(
-        <div key={i}>
-          <label>
-            {this.state.args[i].title}
-            <br />
-            <input
-              name={i}
-              type={this.state.args[i].type}
-              value={this.state.args[i].value}
-              onChange={this.handleChange} />
-          </label>
-        </div>
-      );
-    }
-    return inputs;
-  }
-
   handleChange(event) {
-    // console.log(event);
     let args = Object.assign([], this.state.args);
     args[event.target.name].value = event.target.value;
     this.setState({ args: args });
@@ -189,14 +215,27 @@ class ContractMethodCall extends React.Component {
       });
   }
 
-  render() {
-    if (this.state.web3 === null) {
-      return (
-        <div>
-          <h3>Loading Web3, accounts, and contract...</h3>
+  renderInputs() {
+    const inputs = [];
+    for (let i = 0; i < this.state.args.length; i++) {
+      inputs.push(
+        <div key={i}>
+          <label>
+            {this.state.args[i].title}
+            <br />
+            <input
+              name={i}
+              type={this.state.args[i].type}
+              value={this.state.args[i].value}
+              onChange={this.handleChange} />
+          </label>
         </div>
       );
     }
+    return inputs;
+  }
+
+  render() {
     return (
       <div>
         <h3>{this.state.title}</h3>
@@ -327,74 +366,6 @@ class ContractMethodDynamicArrayCall extends React.Component {
   }
 }
 
-class ContractMethodCallView extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      web3: props.web3,
-      accounts: props.accounts,
-      contract: props.contract,
-      method: props.method,
-      args: props.args,
-      title: props.title,
-      desc: props.desc,
-      text: 'Waiting...',
-      renderText: props.renderText,
-    };
-
-    this.callContractMethod = this.callContractMethod.bind(this);
-  }
-
-  componentDidMount() {
-    this.callContractMethod();
-  }
-
-  callContractMethod() {
-    const contract = this.state.contract;
-    const method = this.state.method;
-    const account = this.state.accounts[0];
-    const args = this.state.args;
-
-    this.setState({ text: 'Waiting...' });
-    contract.methods[method](...args)
-      .call({ from: account }, (error, result) => {
-        if (error) {
-          this.setState({ text: `${error.message}` });
-          return;
-        }
-
-        if (this.state.renderText) {
-          const renderText = this.state.renderText(result);
-          this.setState({ text: renderText });
-        } else {
-          this.setState({ text: `${this.state.method}： ${result}` });
-        }
-      });
-  }
-
-  render() {
-    if (this.state.web3 === null) {
-      return (
-        <div>
-          <h3>Loading Web3, accounts, and contract...</h3>
-        </div>
-      );
-    }
-    return (
-      <div>
-        <h3>{this.state.title}</h3>
-        <div className='new-line'>{this.state.desc}</div>
-        <div>
-          <button onClick={() => this.callContractMethod()}>
-            Refresh
-          </button>
-          <div>{this.state.text}</div>
-        </div>
-      </div>
-    );
-  }
-}
-
 class ContractMethodArrayCallView extends React.Component {
   constructor(props) {
     super(props);
@@ -480,18 +451,19 @@ class ContractMethodDynamicArrayCallView extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      web3: props.web3,
-      accounts: props.accounts,
-      contract: props.contract,
-      sourceMethod: props.sourceMethod,
-      method: props.method,
-      args: props.args,
-      title: props.title,
-      desc: props.desc,
-      text: 'Waiting...',
-      renderText: props.renderText,
-      results: null,
+      text: '',
     };
+
+    this.web3 = props.web3;
+    this.account = props.account;
+    this.contract = props.contract;
+    this.sourceMethod = props.sourceMethod;
+    this.method = props.method;
+    this.args = props.args;
+    this.title = props.title;
+    this.desc = props.desc;
+    this.renderText = props.renderText;
+    this.results = null;
 
     this.callContractMethod = this.callContractMethod.bind(this);
   }
@@ -501,67 +473,51 @@ class ContractMethodDynamicArrayCallView extends React.Component {
   }
 
   async callContractMethod() {
-    const contract = this.state.contract;
-    const method = this.state.method;
-    const args = this.state.args;
-    const account = this.state.accounts[0];
+    const contract = this.contract;
+    const method = this.method;
+    const args = this.args;
+    const account = this.account;
 
     this.setState({ text: 'Waiting...' });
-
-    const indexes = await this.state.sourceMethod.call({ from: account })
+    const indexes = await this.sourceMethod.call({ from: account });
 
     if (indexes === '0') {
       this.setState({ text: '查無資料' });
-      return;
-    }
+    } else {
+      this.results = Array.apply(null, Array(parseInt(indexes)));
+      for (let i = 0; i < indexes; i++) {
+        contract.methods[method](...args, i)
+          .call({ from: account }, (error, result) => {
+            if (error) {
+              this.results[i] = `${error.message}`;
+              return;
+            }
 
-    this.state.results = Array.apply(null, Array(parseInt(indexes)));
-
-    for (let i = 0; i < indexes; i++) {
-      contract.methods[method](...args, i)
-        .call({ from: account }, (error, result) => {
-          const results = this.state.results;
-          if (error) {
-            results[i] = `${error.message}`;
-            return;
-          }
-          if (this.state.renderText) {
-            results[i] = <div>{`[${i}]: `}{this.state.renderText(result)}</div>;
-          } else {
-            results[i] = `[${i}]: ${result}`;
-          }
-          this.setState({ text: this.renderResults() });
-        });
+            if (this.renderText) {
+              this.results[i] = <div>{`[${i}]: `}{this.renderText(result)}</div>;
+            } else {
+              this.results[i] = `[${i}]: ${result}`;
+            }
+            this.setState({ text: this.renderResults() });
+          });
+      }
     }
   }
 
   renderResults() {
-    const results = this.state.results;
-    return results.map((text, i) => (
-      <div key={i}>
-        {text}
-      </div>
+    return this.results.map((text, i) => (
+      <div key={i}>{text}</div>
     ));
   }
 
   render() {
-    if (this.state.web3 === null) {
-      return (
-        <div>
-          <h3>Loading Web3, accounts, and contract...</h3>
-        </div>
-      );
-    }
     return (
       <div>
-        <h3>{this.state.title}</h3>
-        <div className='new-line'>{this.state.desc}</div>
-        <div>
-          <button onClick={() => this.callContractMethod()}>
-            Refresh
-          </button>
-          <div>{this.state.text}</div>
-        </div>
+        <h3 style={{ marginBottom: '8px' }}>
+          <span>{this.title} ({this.desc}) | </span>
+          <button onClick={() => this.callContractMethod()}>Refresh</button>
+        </h3>
+        <div>{this.state.text}</div>
       </div>
     );
   }
