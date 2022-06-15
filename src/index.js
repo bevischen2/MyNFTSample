@@ -11,6 +11,7 @@ import reportWebVitals from './reportWebVitals';
 import SignerHub from "./routes/signer-hub";
 import OperatorHub from "./routes/operator-hub";
 import Proxy from './routes/proxy';
+import MNERC721 from './routes/mn-erc721';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -21,6 +22,7 @@ root.render(
         <Route path='signer-hub' element={<SignerHub />} />
         <Route path='operator-hub' element={<OperatorHub />} />
         <Route path='proxy' element={<Proxy />} />
+        <Route path='erc721' element={<MNERC721 />} />
       </Route>
     </Routes>
   </BrowserRouter>

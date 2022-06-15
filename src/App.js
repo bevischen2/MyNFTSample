@@ -106,6 +106,7 @@ class App extends React.Component {
           }}
         >
           <Link to="/proxy">Proxy</Link> |{" "}
+          <Link to="/erc721">ERC721</Link> |{" "}
           <Link to="/signer-hub">Signer Hub</Link> |{" "}
           <Link to="/operator-hub">Operator Hub</Link> |{" "}
         </nav>
