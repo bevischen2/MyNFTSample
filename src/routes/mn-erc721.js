@@ -8,6 +8,7 @@ import {
   ContractMethodDynamicArrayCallView,
   ETHBalanceView,
 } from '../components/contract-caller-view';
+import { ContractAddressSetter } from '../components/contracts';
 import { renderAddress, renderAddressVerified } from '../components/etherscan-view';
 import ethUtils from '../utils/eth-utils';
 
@@ -16,6 +17,7 @@ class MNERC721 extends React.Component {
     super(props);
     this.state = {
       account: props.account,
+      contract: null,
       devMode: false,
     }
 
@@ -32,14 +34,21 @@ class MNERC721 extends React.Component {
     this.addressVerified = ethUtils.addressVerified;
     this.etherscanLink_address = ethUtils.etherscanLink.address[this.chainId];
     this.etherscanLink_tx = ethUtils.etherscanLink.tx[this.chainId];
-    this.contract = this.contracts.erc721;
   }
 
   renderTop() {
+    const contractAddress = this.state.contract ?
+      renderAddress(this.state.contract._address, this.etherscanLink_address) : null;
     return (
       <div>
         <h2 style={{ margin: '8px 0' }}>ERC721</h2>
-        {renderAddress(this.contract._address, this.etherscanLink_address)}
+        <ContractAddressSetter
+          web3={this.web3}
+          abi={this.contracts.erc721._jsonInterface}
+          callback={contract => {
+            this.setState({ contract: contract });
+          }} />
+        {contractAddress}
       </div>
     );
   }
@@ -51,7 +60,7 @@ class MNERC721 extends React.Component {
     let props = {
       web3: this.web3,
       account: this.accounts[0],
-      contract: this.contract,
+      contract: this.state.contract,
       title: 'Owner',
       desc: '合約擁有者',
       method: 'owner',
@@ -71,7 +80,7 @@ class MNERC721 extends React.Component {
     const props = {
       web3: this.web3,
       account: this.accounts[0],
-      contract: this.contract,
+      contract: this.state.contract,
       desc: '轉移Owner權限',
       method: 'transferOwnership',
       args: [
@@ -93,7 +102,7 @@ class MNERC721 extends React.Component {
     let props = {
       web3: this.web3,
       account: this.accounts[0],
-      contract: this.contract,
+      contract: this.state.contract,
       title: 'Proxy',
       desc: '合約地址',
       method: 'proxy',
@@ -113,7 +122,7 @@ class MNERC721 extends React.Component {
     let props = {
       web3: this.web3,
       account: this.accounts[0],
-      contract: this.contract,
+      contract: this.state.contract,
       title: 'Base URI',
       desc: '基礎網址',
       method: 'baseURI',
@@ -129,7 +138,7 @@ class MNERC721 extends React.Component {
     const props = {
       web3: this.web3,
       account: this.accounts[0],
-      contract: this.contract,
+      contract: this.state.contract,
       desc: '更新Proxy',
       method: 'updateProxy',
       args: [
@@ -148,7 +157,7 @@ class MNERC721 extends React.Component {
     const props = {
       web3: this.web3,
       account: this.accounts[0],
-      contract: this.contract,
+      contract: this.state.contract,
       desc: '設定Base URI',
       method: 'setBaseURI',
       args: [
@@ -170,7 +179,7 @@ class MNERC721 extends React.Component {
     let props = {
       web3: this.web3,
       account: this.accounts[0],
-      contract: this.contract,
+      contract: this.state.contract,
       title: 'Name',
       desc: 'ERC721 Meatadata',
       method: 'name',
@@ -188,7 +197,7 @@ class MNERC721 extends React.Component {
     let props = {
       web3: this.web3,
       account: this.accounts[0],
-      contract: this.contract,
+      contract: this.state.contract,
       title: 'Symbol',
       desc: 'ERC721 Meatadata',
       method: 'symbol',
@@ -206,7 +215,7 @@ class MNERC721 extends React.Component {
     const props = {
       web3: this.web3,
       account: this.accounts[0],
-      contract: this.contract,
+      contract: this.state.contract,
       title: 'Token URI',
       desc: '完整的NFT網址',
       method: 'tokenURI',
@@ -232,7 +241,7 @@ class MNERC721 extends React.Component {
     const props = {
       web3: this.web3,
       account: this.accounts[0],
-      contract: this.contract,
+      contract: this.state.contract,
       title: 'BalanceOf',
       desc: '用戶擁有的NFT數量',
       method: 'balanceOf',
@@ -256,7 +265,7 @@ class MNERC721 extends React.Component {
     const props = {
       web3: this.web3,
       account: this.accounts[0],
-      contract: this.contract,
+      contract: this.state.contract,
       title: 'OwnerOf',
       desc: '某個NFT的擁有者地址',
       method: 'ownerOf',
@@ -282,7 +291,7 @@ class MNERC721 extends React.Component {
     const props = {
       web3: this.web3,
       account: this.accounts[0],
-      contract: this.contract,
+      contract: this.state.contract,
       title: 'Get Appreved',
       desc: '某個NFT的授權對象地址',
       method: 'getApproved',
@@ -308,7 +317,7 @@ class MNERC721 extends React.Component {
     const props = {
       web3: this.web3,
       account: this.accounts[0],
-      contract: this.contract,
+      contract: this.state.contract,
       desc: '授權某個NFT給別人',
       method: 'approve',
       args: [
@@ -332,7 +341,7 @@ class MNERC721 extends React.Component {
     const props = {
       web3: this.web3,
       account: this.accounts[0],
-      contract: this.contract,
+      contract: this.state.contract,
       title: 'Is Approved For All',
       desc: '檢查B用戶是否為A用戶的NFT全權授權對象',
       method: 'isApprovedForAll',
@@ -363,7 +372,7 @@ class MNERC721 extends React.Component {
     const props = {
       web3: this.web3,
       account: this.accounts[0],
-      contract: this.contract,
+      contract: this.state.contract,
       desc: 'A用戶全權授權給B用戶操作NFT',
       method: 'setApprovalForAll',
       args: [
@@ -387,7 +396,7 @@ class MNERC721 extends React.Component {
     const props = {
       web3: this.web3,
       account: this.accounts[0],
-      contract: this.contract,
+      contract: this.state.contract,
       desc: 'transfer NFT給別人',
       method: 'transferFrom',
       args: [
@@ -445,8 +454,12 @@ class MNERC721 extends React.Component {
   }
 
   render() {
+    if (!this.state.contract) {
+      return <div>{this.renderTop()}</div>
+    }
+
     return (
-      <div>
+      <div key={this.state.contract?._address}>
         {this.renderTop()}
         {this.renderCall_Owner()}
         {this.renderCall_Proxy()}
@@ -459,7 +472,7 @@ class MNERC721 extends React.Component {
         {this.renderCall_GetApproved()}
         {this.renderDevModeView()}
       </div>
-    );
+    )
   }
 }
 
