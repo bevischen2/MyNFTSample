@@ -34,6 +34,7 @@ class MNERC721 extends React.Component {
     this.addressVerified = ethUtils.addressVerified;
     this.etherscanLink_address = ethUtils.etherscanLink.address[this.chainId];
     this.etherscanLink_tx = ethUtils.etherscanLink.tx[this.chainId];
+    this.state.contract = this.contracts.erc721;
   }
 
   renderTop() {

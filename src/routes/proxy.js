@@ -153,7 +153,6 @@ class Proxy extends React.Component {
       args: [],
       etherscanLink: this.etherscanLink_tx,
     };
-    console.log(props);
     return <ContractMethodSend {...props} />;
   }
 
