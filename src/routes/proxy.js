@@ -39,8 +39,8 @@ class Proxy extends React.Component {
   renderTop() {
     return (
       <div>
-        <h2 style={{ margin: '8px 0' }}>Operator Hub</h2>
-        {renderAddress(this.contracts.operatorHub._address, this.etherscanLink_address)}
+        <h2 style={{ margin: '8px 0' }}>Proxy</h2>
+        {renderAddress(this.contract._address, this.etherscanLink_address)}
       </div>
     );
   }
