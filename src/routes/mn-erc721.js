@@ -90,7 +90,7 @@ class MNERC721 extends React.Component {
           value: '',
         },
       ],
-      therscanLink: this.etherscanLink_tx,
+      etherscanLink: this.etherscanLink_tx,
     };
     return <ContractMethodSend {...props} />;
   }
@@ -148,7 +148,7 @@ class MNERC721 extends React.Component {
           value: '',
         },
       ],
-      therscanLink: this.etherscanLink_tx,
+      etherscanLink: this.etherscanLink_tx,
     };
     return <ContractMethodSend {...props} />;
   }
@@ -167,7 +167,7 @@ class MNERC721 extends React.Component {
           value: '',
         },
       ],
-      therscanLink: this.etherscanLink_tx,
+      etherscanLink: this.etherscanLink_tx,
     };
     return <ContractMethodSend {...props} />;
   }
@@ -332,7 +332,7 @@ class MNERC721 extends React.Component {
           value: 0,
         },
       ],
-      therscanLink: this.etherscanLink_tx,
+      etherscanLink: this.etherscanLink_tx,
     };
     return <ContractMethodSend {...props} />;
   }
@@ -387,7 +387,7 @@ class MNERC721 extends React.Component {
           value: '',
         },
       ],
-      therscanLink: this.etherscanLink_tx,
+      etherscanLink: this.etherscanLink_tx,
     };
     return <ContractMethodSend {...props} />;
   }
@@ -416,7 +416,7 @@ class MNERC721 extends React.Component {
           value: 0,
         },
       ],
-      therscanLink: this.etherscanLink_tx,
+      etherscanLink: this.etherscanLink_tx,
     };
     return <ContractMethodSend {...props} />;
   }

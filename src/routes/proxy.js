@@ -80,7 +80,7 @@ class Proxy extends React.Component {
           value: '',
         },
       ],
-      therscanLink: this.etherscanLink_tx,
+      etherscanLink: this.etherscanLink_tx,
     };
     return <ContractMethodSend {...props} />;
   }
@@ -120,7 +120,7 @@ class Proxy extends React.Component {
           value: '',
         },
       ],
-      therscanLink: this.etherscanLink_tx,
+      etherscanLink: this.etherscanLink_tx,
     };
     return <ContractMethodSend {...props} />;
   }
@@ -151,8 +151,9 @@ class Proxy extends React.Component {
       desc: '暫停',
       method: 'pause',
       args: [],
-      therscanLink: this.etherscanLink_tx,
+      etherscanLink: this.etherscanLink_tx,
     };
+    console.log(props);
     return <ContractMethodSend {...props} />;
   }
 
@@ -164,7 +165,7 @@ class Proxy extends React.Component {
       desc: '解除暫停',
       method: 'unpause',
       args: [],
-      therscanLink: this.etherscanLink_tx,
+      etherscanLink: this.etherscanLink_tx,
     };
     return <ContractMethodSend {...props} />;
   }
@@ -204,7 +205,7 @@ class Proxy extends React.Component {
           value: '',
         },
       ],
-      therscanLink: this.etherscanLink_tx,
+      etherscanLink: this.etherscanLink_tx,
     };
     return <ContractMethodSend {...props} />;
   }
@@ -223,7 +224,7 @@ class Proxy extends React.Component {
           value: '',
         },
       ],
-      therscanLink: this.etherscanLink_tx,
+      etherscanLink: this.etherscanLink_tx,
     };
     return <ContractMethodSend {...props} />;
   }
@@ -270,7 +271,7 @@ class Proxy extends React.Component {
           value: 0,
         },
       ],
-      therscanLink: this.etherscanLink_tx,
+      etherscanLink: this.etherscanLink_tx,
     };
     return <ContractMethodSend {...props} />;
   }
@@ -304,7 +305,7 @@ class Proxy extends React.Component {
           value: 0,
         },
       ],
-      therscanLink: this.etherscanLink_tx,
+      etherscanLink: this.etherscanLink_tx,
     };
     return <ContractMethodSend {...props} />;
   }
@@ -341,7 +342,7 @@ class Proxy extends React.Component {
           value: 1,
         },
       ],
-      therscanLink: this.etherscanLink_tx,
+      etherscanLink: this.etherscanLink_tx,
     };
     return <ContractMethodSend {...props} />;
   }
@@ -375,7 +376,7 @@ class Proxy extends React.Component {
           value: '',
         },
       ],
-      therscanLink: this.etherscanLink_tx,
+      etherscanLink: this.etherscanLink_tx,
     };
     return <ContractMethodSend {...props} />;
   }
@@ -444,7 +445,7 @@ class Proxy extends React.Component {
           value: 0,
         },
       ],
-      therscanLink: this.etherscanLink_tx,
+      etherscanLink: this.etherscanLink_tx,
     };
     return <SignSignature {...props} />;
   }
