@@ -50,11 +50,24 @@ class ContractMethodSend extends React.Component {
 
     const errorHandler = error => {
       if (typeof (this.state.status) === 'string' || this.state.status === null) {
-        this.setState({ status: ['Error.', <br key='br' />, error.message] });
+        this.setState({
+          status: (
+            <div>
+              <div>Error.</div>
+              <div>{error.message}</div>
+            </div>
+          )
+        });
       } else {
-        const status = this.state.status.slice();
-        status[0] = 'Error.';
-        this.setState({ status: [...status, <br key='br' />, error.message] });
+        this.setState({
+          status: (
+            <div>
+              {this.state.status}
+              <div>Error.</div>
+              <div>{error.message}</div>
+            </div>
+          )
+        });
       }
     };
 
@@ -376,18 +389,17 @@ class ContractMethodDynamicArrayCall extends React.Component {
 class ContractMethodArrayCallView extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      web3: props.web3,
-      accounts: props.accounts,
-      contract: props.contract,
-      method: props.method,
-      indexes: props.indexes,
-      title: props.title,
-      desc: props.desc,
-      text: 'Waiting...',
-      renderText: props.renderText,
-      results: props.indexes.map(() => null),
-    };
+    this.state = { text: '' };
+
+    this.web3 = props.web3;
+    this.account = props.account;
+    this.contract = props.contract;
+    this.method = props.method;
+    this.indexes = props.indexes;
+    this.title = props.title;
+    this.desc = props.desc;
+    this.renderText = props.renderText;
+    this.results = props.indexes.map(() => null);
 
     this.callContractMethod = this.callContractMethod.bind(this);
   }
@@ -397,23 +409,24 @@ class ContractMethodArrayCallView extends React.Component {
   }
 
   callContractMethod() {
-    const contract = this.state.contract;
-    const method = this.state.method;
-    const account = this.state.accounts[0];
-    const indexes = this.state.indexes;
+    const contract = this.contract;
+    const method = this.method;
+    const account = this.account;
+    const indexes = this.indexes;
 
     this.setState({ text: 'Waiting...' });
 
     for (let i = 0; i < indexes.length; i++) {
       contract.methods[method](...indexes[i])
         .call({ from: account }, (error, result) => {
-          const results = this.state.results;
+          const results = this.results;
           if (error) {
             results[i] = `${error.message}`;
             return;
           }
-          if (this.state.renderText) {
-            results[i] = <div>{`[${i}]: `}{this.state.renderText(result)}</div>;
+
+          if (this.renderText) {
+            results[i] = <div>{`[${i}]: `}{this.renderText(result)}</div>;
           } else {
             results[i] = `[${i}]: ${result}`;
           }
@@ -423,30 +436,17 @@ class ContractMethodArrayCallView extends React.Component {
   }
 
   renderResults() {
-    const results = this.state.results;
-    return results.map((text, i) => (
-      <div key={i}>
-        {text}
-      </div>
-    ));
+    return this.results.map((text, i) => (<div key={i}>{text}</div>));
   }
 
   render() {
-    if (this.state.web3 === null) {
-      return (
-        <div>
-          <h3>Loading Web3, accounts, and contract...</h3>
-        </div>
-      );
-    }
     return (
       <div>
-        <h3>{this.state.title}</h3>
-        <div className='new-line'>{this.state.desc}</div>
+        <h3 style={{ marginBottom: '8px' }}>
+          <span>{this.title} ({this.desc}) | </span>
+          <button onClick={() => this.callContractMethod()}>Refresh</button>
+        </h3>
         <div>
-          <button onClick={() => this.callContractMethod()}>
-            Refresh
-          </button>
           <div>{this.state.text}</div>
         </div>
       </div>
@@ -580,6 +580,112 @@ class ETHBalanceView extends React.Component {
   }
 }
 
+class SignSignature extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      args: props.args,
+      text: '',
+    };
+
+    this.web3 = props.web3;
+    this.signer = props.signer;
+    this.desc = props.desc;
+
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  renderInputs() {
+    const inputs = [];
+    for (let i = 0; i < this.state.args.length; i++) {
+      inputs.push(
+        <div key={i}>
+          <label>
+            <b>{this.state.args[i].title} : </b>
+            <input style={{ width: '330px' }}
+              name={i}
+              type={this.state.args[i].type}
+              value={this.state.args[i].value}
+              onChange={this.handleChange} />
+          </label>
+        </div>
+      );
+    }
+    return inputs;
+  }
+
+  handleChange(event) {
+    const args = Object.assign([], this.state.args);
+    args[event.target.name].value = event.target.value;
+    this.setState({ args: args });
+  }
+
+  async handleSubmit(event) {
+    event.preventDefault();
+
+    const errorHandler = error => {
+      if (typeof (this.state.text) === 'string' || this.state.text === null) {
+        this.setState({
+          text: (
+            <div>
+              <div>Error.</div>
+              <div>{error.message}</div>
+            </div>
+          )
+        });
+      } else {
+        this.setState({
+          text: (
+            <div>
+              {this.state.text}
+              <div>Error.</div>
+              <div>{error.message}</div>
+            </div>
+          )
+        });
+      }
+    };
+
+    const signer = this.signer;
+    const args = [...event.target].slice(0, event.target.length - 1).map((e) => (e.value));
+    const soliditySha3 = this.web3.utils.soliditySha3(
+      { type: 'string', value: args[0] },
+      { type: 'uint256', value: args[1] },
+      { type: 'address', value: args[2] },
+      { type: 'address', value: args[3] },
+      { type: 'uint256', value: args[4] }
+    );
+    console.log(args);
+
+    this.setState({ status: 'Executing...' });
+    this.web3.eth.personal.sign(soliditySha3, signer)
+      .then(signature => {
+        this.setState({
+          text: (
+            <div>{signature}</div>
+          )
+        });
+      })
+      .catch(errorHandler);
+  }
+
+  render() {
+    return (
+      <div>
+        <h3 style={{ marginBottom: '8px' }}>{this.desc}</h3>
+        <div>
+          <form onSubmit={this.handleSubmit}>
+            {this.renderInputs()}
+            <input style={{ margin: '4px 0' }} type="submit" value="submit" />
+          </form>
+          <div>{this.state.text}</div>
+        </div>
+      </div>
+    );
+  }
+}
+
 export {
   ContractMethodSend,
   ContractMethodCall,
@@ -587,5 +693,6 @@ export {
   ContractMethodCallView,
   ContractMethodArrayCallView,
   ContractMethodDynamicArrayCallView,
-  ETHBalanceView
+  ETHBalanceView,
+  SignSignature,
 };

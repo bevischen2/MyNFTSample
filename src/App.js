@@ -43,6 +43,9 @@ class App extends React.Component {
     this.chainId = ethUtils.chainId = chainId;
     this.contractDeployed = ethUtils.contractDeployed = contractDeployed;
     this.addressVerified = ethUtils.addressVerified = await ethUtils.loadAddressVerified();
+    this.addressVerified[this.contractDeployed.contracts.SignerHub.address] = 'Signer Hub';
+    this.addressVerified[this.contractDeployed.contracts.OperatorHub.address] = 'Operator Hub';
+    this.addressVerified[this.contractDeployed.contracts.MNProxyUserMintable.address] = 'Proxy';
   }
 
   handleChainChanged(_chainId) {
@@ -102,6 +105,7 @@ class App extends React.Component {
             paddingBottom: "1rem",
           }}
         >
+          <Link to="/proxy">Proxy</Link> |{" "}
           <Link to="/signer-hub">Signer Hub</Link> |{" "}
           <Link to="/operator-hub">Operator Hub</Link> |{" "}
         </nav>

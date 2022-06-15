@@ -8,17 +8,19 @@ import {
 } from 'react-router-dom';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { SignerHub } from "./routes/signer-hub";
-import { OperatorHub } from "./routes/operator-hub";
+import SignerHub from "./routes/signer-hub";
+import OperatorHub from "./routes/operator-hub";
+import Proxy from './routes/proxy';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <BrowserRouter>
     <Routes>
       <Route path='/' element={<App />}>
-        <Route index element={<SignerHub />} />
+        <Route index element={<Proxy />} />
         <Route path='signer-hub' element={<SignerHub />} />
         <Route path='operator-hub' element={<OperatorHub />} />
+        <Route path='proxy' element={<Proxy />} />
       </Route>
     </Routes>
   </BrowserRouter>

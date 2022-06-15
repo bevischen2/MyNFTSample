@@ -247,4 +247,4 @@ class OperatorHub extends React.Component {
   }
 }
 
-export { OperatorHub };
+export default OperatorHub;

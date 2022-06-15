@@ -247,4 +247,4 @@ class SignerHub extends React.Component {
   }
 }
 
-export { SignerHub };
+export default SignerHub;
