@@ -15,7 +15,7 @@ import MNERC721 from './routes/mn-erc721';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <BrowserRouter>
+  <BrowserRouter basename='/MyNFTSample'>
     <Routes>
       <Route path='/' element={<App />}>
         <Route index element={<Proxy />} />
