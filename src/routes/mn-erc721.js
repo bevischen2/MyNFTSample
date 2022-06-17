@@ -439,7 +439,7 @@ class MNERC721 extends React.Component {
     }
     return (
       <div style={{ borderTop: '1px solid #ccc' }}>
-        <div><label>
+        <div style={{ color: 'red' }}><label>
           Dev Mode
           <input
             type="checkbox"

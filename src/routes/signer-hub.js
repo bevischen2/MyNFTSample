@@ -144,32 +144,6 @@ class SignerHub extends React.Component {
     return <ContractMethodSend {...props} />;
   }
 
-  renderDevModeView() {
-    const content = () => {
-      if (!this.state.devMode) { return; }
-      return <div>
-        {this.renderCall_Contains()}
-        {this.renderCall_GetCount()}
-        {this.renderCall_GetAt()}
-      </div>;
-    }
-    return (
-      <div style={{ borderTop: '1px solid #ccc' }}>
-        <div><label>
-          Dev Mode
-          <input
-            type="checkbox"
-            checked={this.state.devMode}
-            onChange={() => {
-              this.setState({ devMode: !this.state.devMode });
-            }}
-          />
-        </label></div>
-        {content()}
-      </div>
-    );
-  }
-
   renderCall_Contains() {
     let props = {
       web3: this.web3,
@@ -232,6 +206,35 @@ class SignerHub extends React.Component {
     return <ContractMethodCall {...props} />;
   }
 
+  ////////////////////////////////////////////////////////////////////////////////
+
+  renderDevModeView() {
+    const content = () => {
+      if (!this.state.devMode) { return; }
+      return <div>
+        {this.renderCall_Contains()}
+        {this.renderCall_GetCount()}
+        {this.renderCall_GetAt()}
+        {this.renderSend_TransferOwnership()}
+      </div>;
+    }
+    return (
+      <div style={{ borderTop: '1px solid #ccc' }}>
+        <div style={{ color: 'red' }}><label>
+          Dev Mode
+          <input
+            type="checkbox"
+            checked={this.state.devMode}
+            onChange={() => {
+              this.setState({ devMode: !this.state.devMode });
+            }}
+          />
+        </label></div>
+        {content()}
+      </div>
+    );
+  }
+
   render() {
     return (
       <div>
@@ -240,7 +243,6 @@ class SignerHub extends React.Component {
         {this.renderCall_GetAddresses()}
         {this.renderSend_Set()}
         {this.renderSend_DeleteAt()}
-        {this.renderSend_TransferOwnership()}
         {this.renderDevModeView()}
       </div>
     );
