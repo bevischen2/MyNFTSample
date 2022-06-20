@@ -89,7 +89,7 @@ class App extends React.Component {
     if (!this.provider || this.state.account === null) {
       return (
         <div>
-          v1.0.5
+          v1.0.6
           <br />
           <button onClick={async () => { this.connect() }} >Connect</button>
         </div>
@@ -105,6 +105,7 @@ class App extends React.Component {
             paddingBottom: "1rem",
           }}
         >
+          <Link to="/abc">ABC 模式</Link> |{" "}
           <Link to="/proxy">Proxy</Link> |{" "}
           <Link to="/erc721">ERC721</Link> |{" "}
           <Link to="/signer-hub">Signer Hub</Link> |{" "}

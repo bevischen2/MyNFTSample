@@ -656,7 +656,6 @@ class SignSignature extends React.Component {
       { type: 'address', value: args[3] },
       { type: 'uint256', value: args[4] }
     );
-    console.log(args);
 
     this.setState({ status: 'Executing...' });
     this.web3.eth.personal.sign(soliditySha3, signer)

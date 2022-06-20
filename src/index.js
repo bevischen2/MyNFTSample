@@ -12,17 +12,19 @@ import SignerHub from "./routes/signer-hub";
 import OperatorHub from "./routes/operator-hub";
 import Proxy from './routes/proxy';
 import MNERC721 from './routes/mn-erc721';
+import ABC from './routes/abc';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <BrowserRouter basename='/MyNFTSample'>
     <Routes>
       <Route path='/' element={<App />}>
-        <Route index element={<Proxy />} />
+        <Route index element={<ABC />} />
         <Route path='signer-hub' element={<SignerHub />} />
         <Route path='operator-hub' element={<OperatorHub />} />
         <Route path='proxy' element={<Proxy />} />
         <Route path='erc721' element={<MNERC721 />} />
+        <Route path='abc' element={<ABC />} />
       </Route>
     </Routes>
   </BrowserRouter>
