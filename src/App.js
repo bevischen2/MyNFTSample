@@ -59,11 +59,12 @@ class App extends React.Component {
   // For now, 'eth_accounts' will continue to always return an array
   handleAccountsChanged(accounts) {
     if (accounts.length === 0) {
+      // MetaMask is locked or the user has not connected any accounts
+      console.log('Please connect to MetaMask.');
       window.location.reload();
       this.accounts = ethUtils.accounts = [];
       this.setState({ account: null });
     } else if (accounts !== this.accounts) {
-      window.location.reload();
       this.accounts = ethUtils.accounts = accounts;
       this.setState({ account: accounts[0] });
     }
@@ -71,25 +72,14 @@ class App extends React.Component {
 
   connect() {
     // load accounts from metamask.
-    ethUtils.connectToMetaMask(this.provider, accounts => {
-      if (accounts.length === 0) {
-        // MetaMask is locked or the user has not connected any accounts
-        console.log('Please connect to MetaMask.');
-
-        this.accounts = ethUtils.accounts = [];
-        this.setState({ account: null });
-      } else if (accounts !== this.accounts) {
-        this.accounts = ethUtils.accounts = accounts;
-        this.setState({ account: accounts[0] });
-      }
-    });
+    ethUtils.connectToMetaMask(this.provider, this.handleAccountsChanged);
   }
 
   render() {
     if (!this.provider || this.state.account === null) {
       return (
         <div>
-          v1.0.6
+          v1.0.7
           <br />
           <button onClick={async () => { this.connect() }} >Connect</button>
         </div>
@@ -111,7 +101,7 @@ class App extends React.Component {
           <Link to="/signer-hub">Signer Hub</Link> |{" "}
           <Link to="/operator-hub">Operator Hub</Link> |{" "}
         </nav>
-        <Outlet context={[this.state.account]} />
+        <Outlet key={this.state.account} />
       </div >
     );
   }
