@@ -79,7 +79,7 @@ class App extends React.Component {
     if (!this.provider || this.state.account === null) {
       return (
         <div>
-          v1.0.7
+          v1.0.8
           <br />
           <button onClick={async () => { this.connect() }} >Connect</button>
         </div>

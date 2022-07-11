@@ -360,6 +360,11 @@ class Proxy extends React.Component {
           value: 0,
         },
         {
+          type: 'number',
+          title: '簽名到期時間（unix timestamp）',
+          value: Math.floor(Date.now() / 1000),
+        },
+        {
           type: 'string',
           title: '我方ERC721合約地址',
           value: '',
@@ -442,6 +447,11 @@ class Proxy extends React.Component {
           type: 'number',
           title: 'NFT id',
           value: 0,
+        },
+        {
+          type: 'number',
+          title: '簽名到期時間（unix timestamp）',
+          value: Math.floor(Date.now() / 1000) + 600,
         },
       ],
       etherscanLink: this.etherscanLink_tx,

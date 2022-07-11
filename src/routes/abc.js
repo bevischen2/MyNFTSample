@@ -136,6 +136,11 @@ class ABC extends React.Component {
           value: 0,
         },
         {
+          type: 'number',
+          title: '簽名到期時間（unix timestamp）',
+          value: Math.floor(Date.now() / 1000) + 600,
+        },
+        {
           type: 'string',
           title: '我方ERC721合約地址',
           value: this.state.contractErc721._address || '', 
@@ -186,6 +191,11 @@ class ABC extends React.Component {
           type: 'number',
           title: 'NFT id',
           value: 0,
+        },
+        {
+          type: 'number',
+          title: '簽名到期時間（unix timestamp）',
+          value: Math.floor(Date.now() / 1000) + 600,
         },
       ],
       etherscanLink: this.etherscanLink_tx,

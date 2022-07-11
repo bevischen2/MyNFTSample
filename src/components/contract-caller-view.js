@@ -654,7 +654,8 @@ class SignSignature extends React.Component {
       { type: 'uint256', value: args[1] },
       { type: 'address', value: args[2] },
       { type: 'address', value: args[3] },
-      { type: 'uint256', value: args[4] }
+      { type: 'uint256', value: args[4] },
+      { type: 'uint32', value: args[5] }
     );
 
     this.setState({ status: 'Executing...' });
