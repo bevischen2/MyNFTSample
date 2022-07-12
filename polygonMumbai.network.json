@@ -349,7 +349,7 @@
       ]
     },
     "MNProxyUserMintable": {
-      "address": "0xe0Ee2BCcCe3fBe4244c97FF0E329F675d31F2bC0",
+      "address": "0xB13D62547077468d66489CDaCc4ffd9562F69342",
       "abi": [
         {
           "inputs": [
@@ -675,6 +675,11 @@
               "internalType": "uint256",
               "name": "userMintId",
               "type": "uint256"
+            },
+            {
+              "internalType": "uint32",
+              "name": "expiration",
+              "type": "uint32"
             },
             {
               "internalType": "address",
